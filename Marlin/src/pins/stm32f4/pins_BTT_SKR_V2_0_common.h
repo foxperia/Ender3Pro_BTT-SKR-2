@@ -38,13 +38,21 @@
 // Use one of these or SDCard-based Emulation will be used
 #if NO_EEPROM_SELECTED
   //#define SRAM_EEPROM_EMULATION                 // Use BackSRAM-based EEPROM emulation
-  #define FLASH_EEPROM_EMULATION                  // Use Flash-based EEPROM emulation
+  // #define FLASH_EEPROM_EMULATION                  // Use Flash-based EEPROM emulation
+  #define I2C_EEPROM                            // Use I2C EEPROM
 #endif
 
 #if ENABLED(FLASH_EEPROM_EMULATION)
   // Decrease delays and flash wear by spreading writes across the
   // 128 kB sector allocated for EEPROM emulation.
   #define FLASH_EEPROM_LEVELING
+#endif
+
+// I2C EEPROM Configuration
+#if ENABLED(I2C_EEPROM)
+  #define EEPROM_DEVICE_ADDRESS   0x50          // I2C EEPROM Device Address
+  #define MARLIN_EEPROM_SIZE      0x8000        // AT24C256 - 32KB
+  #define EEPROM_WRITE_DELAY      10
 #endif
 
 // USB Flash Drive support
@@ -189,12 +197,24 @@
   #define E0_CS_PIN                         PC6
 #endif
 
+#if NUM_Z_STEPPER_DRIVERS == 1
 #define E1_STEP_PIN                         PD11
 #define E1_DIR_PIN                          PD10
 #define E1_ENABLE_PIN                       PD13
 #ifndef E1_CS_PIN
   #define E1_CS_PIN                         PD12
 #endif
+#elif NUM_Z_STEPPER_DRIVERS == 2
+  #define Z2_STEP_PIN                         PD11
+  #define Z2_DIR_PIN                          PD10
+  #define Z2_ENABLE_PIN                       PD13
+  #ifndef Z2_CS_PIN
+    #define Z2_CS_PIN                         PD12
+  #endif
+#else
+  #error "Not configured for NUM_Z_STEPPER_DRIVERS == 2"
+#endif
+
 
 //
 // Temperature Sensors
